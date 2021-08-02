@@ -8,31 +8,17 @@
 
 import UIKit
 
-@objc public protocol TagListViewDelegate {
-    @objc optional func tagPressed(_ title: String, tagView: TagView, sender: TagListView) -> Void
-    @objc optional func tagRemoveButtonPressed(_ title: String, tagView: TagView, sender: TagListView) -> Void
-}
-
-@IBDesignable
 open class TagListView: UIView {
     
-    @IBInspectable open dynamic var textColor: UIColor = .white {
+    open dynamic var textColor: UIColor = .white {
         didSet {
             tagViews.forEach {
                 $0.textColor = textColor
             }
         }
     }
-    
-    @IBInspectable open dynamic var selectedTextColor: UIColor = .white {
-        didSet {
-            tagViews.forEach {
-                $0.selectedTextColor = selectedTextColor
-            }
-        }
-    }
 
-    @IBInspectable open dynamic var tagLineBreakMode: NSLineBreakMode = .byTruncatingMiddle {
+    open dynamic var tagLineBreakMode: NSLineBreakMode = .byTruncatingMiddle {
         didSet {
             tagViews.forEach {
                 $0.titleLineBreakMode = tagLineBreakMode
@@ -40,7 +26,7 @@ open class TagListView: UIView {
         }
     }
     
-    @IBInspectable open dynamic var tagBackgroundColor: UIColor = UIColor.gray {
+    open dynamic var tagBackgroundColor: UIColor = UIColor.gray {
         didSet {
             tagViews.forEach {
                 $0.tagBackgroundColor = tagBackgroundColor
@@ -48,30 +34,14 @@ open class TagListView: UIView {
         }
     }
     
-    @IBInspectable open dynamic var tagHighlightedBackgroundColor: UIColor? {
-        didSet {
-            tagViews.forEach {
-                $0.highlightedBackgroundColor = tagHighlightedBackgroundColor
-            }
-        }
-    }
-    
-    @IBInspectable open dynamic var tagSelectedBackgroundColor: UIColor? {
-        didSet {
-            tagViews.forEach {
-                $0.selectedBackgroundColor = tagSelectedBackgroundColor
-            }
-        }
-    }
-    
-    @IBInspectable open dynamic var cornerRadius: CGFloat = 0 {
+    open dynamic var cornerRadius: CGFloat = 0 {
         didSet {
             tagViews.forEach {
                 $0.cornerRadius = cornerRadius
             }
         }
     }
-    @IBInspectable open dynamic var borderWidth: CGFloat = 0 {
+    open dynamic var borderWidth: CGFloat = 0 {
         didSet {
             tagViews.forEach {
                 $0.borderWidth = borderWidth
@@ -79,7 +49,7 @@ open class TagListView: UIView {
         }
     }
     
-    @IBInspectable open dynamic var borderColor: UIColor? {
+    open dynamic var borderColor: UIColor? {
         didSet {
             tagViews.forEach {
                 $0.borderColor = borderColor
@@ -87,15 +57,7 @@ open class TagListView: UIView {
         }
     }
     
-    @IBInspectable open dynamic var selectedBorderColor: UIColor? {
-        didSet {
-            tagViews.forEach {
-                $0.selectedBorderColor = selectedBorderColor
-            }
-        }
-    }
-    
-    @IBInspectable open dynamic var paddingY: CGFloat = 2 {
+    open dynamic var paddingY: CGFloat = 2 {
         didSet {
             defer { rearrangeViews() }
             tagViews.forEach {
@@ -103,7 +65,8 @@ open class TagListView: UIView {
             }
         }
     }
-    @IBInspectable open dynamic var paddingX: CGFloat = 5 {
+
+    open dynamic var paddingX: CGFloat = 5 {
         didSet {
             defer { rearrangeViews() }
             tagViews.forEach {
@@ -111,18 +74,20 @@ open class TagListView: UIView {
             }
         }
     }
-    @IBInspectable open dynamic var marginY: CGFloat = 2 {
-        didSet {
-            rearrangeViews()
-        }
-    }
-    @IBInspectable open dynamic var marginX: CGFloat = 5 {
+
+    open dynamic var marginY: CGFloat = 2 {
         didSet {
             rearrangeViews()
         }
     }
 
-    @IBInspectable open dynamic var minWidth: CGFloat = 0 {
+    open dynamic var marginX: CGFloat = 5 {
+        didSet {
+            rearrangeViews()
+        }
+    }
+
+    open dynamic var minWidth: CGFloat = 0 {
         didSet {
             rearrangeViews()
         }
@@ -135,64 +100,29 @@ open class TagListView: UIView {
         case leading
         case trailing
     }
-    @IBInspectable open var alignment: Alignment = .leading {
+    open var alignment: Alignment = .leading {
         didSet {
             rearrangeViews()
         }
     }
-    @IBInspectable open dynamic var shadowColor: UIColor = .white {
+    open dynamic var shadowColor: UIColor = .white {
         didSet {
             rearrangeViews()
         }
     }
-    @IBInspectable open dynamic var shadowRadius: CGFloat = 0 {
+    open dynamic var shadowRadius: CGFloat = 0 {
         didSet {
             rearrangeViews()
         }
     }
-    @IBInspectable open dynamic var shadowOffset: CGSize = .zero {
+    open dynamic var shadowOffset: CGSize = .zero {
         didSet {
             rearrangeViews()
         }
     }
-    @IBInspectable open dynamic var shadowOpacity: Float = 0 {
+    open dynamic var shadowOpacity: Float = 0 {
         didSet {
             rearrangeViews()
-        }
-    }
-    
-    @IBInspectable open dynamic var enableRemoveButton: Bool = false {
-        didSet {
-            defer { rearrangeViews() }
-            tagViews.forEach {
-                $0.enableRemoveButton = enableRemoveButton
-            }
-        }
-    }
-    
-    @IBInspectable open dynamic var removeButtonIconSize: CGFloat = 12 {
-        didSet {
-            defer { rearrangeViews() }
-            tagViews.forEach {
-                $0.removeButtonIconSize = removeButtonIconSize
-            }
-        }
-    }
-    @IBInspectable open dynamic var removeIconLineWidth: CGFloat = 1 {
-        didSet {
-            defer { rearrangeViews() }
-            tagViews.forEach {
-                $0.removeIconLineWidth = removeIconLineWidth
-            }
-        }
-    }
-    
-    @IBInspectable open dynamic var removeIconLineColor: UIColor = UIColor.white.withAlphaComponent(0.54) {
-        didSet {
-            defer { rearrangeViews() }
-            tagViews.forEach {
-                $0.removeIconLineColor = removeIconLineColor
-            }
         }
     }
     
@@ -204,9 +134,7 @@ open class TagListView: UIView {
             }
         }
     }
-    
-    @IBOutlet open weak var delegate: TagListViewDelegate?
-    
+
     open private(set) var tagViews: [TagView] = []
     private(set) var tagBackgroundViews: [UIView] = []
     private(set) var rowViews: [UIView] = []
@@ -215,14 +143,6 @@ open class TagListView: UIView {
         didSet {
             invalidateIntrinsicContentSize()
         }
-    }
-    
-    // MARK: - Interface Builder
-    
-    open override func prepareForInterfaceBuilder() {
-        addTag("Welcome")
-        addTag("to")
-        addTag("TagListView").isSelected = true
     }
     
     // MARK: - Layout
@@ -244,9 +164,9 @@ open class TagListView: UIView {
         if #available(iOS 10.0, tvOS 10.0, *) {
             isRtl = effectiveUserInterfaceLayoutDirection == .rightToLeft
         }
-        else if #available(iOS 9.0, *) {
+        /*else if #available(iOS 9.0, *) {
             isRtl = UIView.userInterfaceLayoutDirection(for: semanticContentAttribute) == .rightToLeft
-        }
+        }*/
         else if let shared = UIApplication.value(forKey: "sharedApplication") as? UIApplication {
             isRtl = shared.userInterfaceLayoutDirection == .leftToRight
         }
@@ -338,32 +258,14 @@ open class TagListView: UIView {
         let tagView = TagView(title: title)
         
         tagView.textColor = textColor
-        tagView.selectedTextColor = selectedTextColor
         tagView.tagBackgroundColor = tagBackgroundColor
-        tagView.highlightedBackgroundColor = tagHighlightedBackgroundColor
-        tagView.selectedBackgroundColor = tagSelectedBackgroundColor
         tagView.titleLineBreakMode = tagLineBreakMode
         tagView.cornerRadius = cornerRadius
         tagView.borderWidth = borderWidth
         tagView.borderColor = borderColor
-        tagView.selectedBorderColor = selectedBorderColor
         tagView.paddingX = paddingX
         tagView.paddingY = paddingY
         tagView.textFont = textFont
-        tagView.removeIconLineWidth = removeIconLineWidth
-        tagView.removeButtonIconSize = removeButtonIconSize
-        tagView.enableRemoveButton = enableRemoveButton
-        tagView.removeIconLineColor = removeIconLineColor
-        tagView.addTarget(self, action: #selector(tagPressed(_:)), for: .touchUpInside)
-        tagView.removeButton.addTarget(self, action: #selector(removeButtonPressed(_:)), for: .touchUpInside)
-        
-        // On long press, deselect all tags except this one
-        tagView.onLongPress = { [unowned self] this in
-            self.tagViews.forEach {
-                $0.isSelected = $0 == this
-            }
-        }
-        
         return tagView
     }
 
@@ -413,11 +315,11 @@ open class TagListView: UIView {
     }
     
     open func setTitle(_ title: String, at index: Int) {
-        tagViews[index].titleLabel?.text = title
+        tagViews[index].text = title
     }
     
     open func removeTag(_ title: String) {
-        tagViews.reversed().filter({ $0.currentTitle == title }).forEach(removeTagView)
+        tagViews.reversed().filter({ $0.text == title }).forEach(removeTagView)
     }
     
     open func removeTagView(_ tagView: TagView) {
@@ -439,22 +341,5 @@ open class TagListView: UIView {
         
         let views: [UIView] = tagViews + tagBackgroundViews
         views.forEach { $0.removeFromSuperview() }
-    }
-
-    open func selectedTags() -> [TagView] {
-        return tagViews.filter { $0.isSelected }
-    }
-    
-    // MARK: - Events
-    
-    @objc func tagPressed(_ sender: TagView!) {
-        sender.onTap?(sender)
-        delegate?.tagPressed?(sender.currentTitle ?? "", tagView: sender, sender: self)
-    }
-    
-    @objc func removeButtonPressed(_ closeButton: CloseButton!) {
-        if let tagView = closeButton.tagView {
-            delegate?.tagRemoveButtonPressed?(tagView.currentTitle ?? "", tagView: tagView, sender: self)
-        }
     }
 }

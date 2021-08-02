@@ -8,150 +8,71 @@
 
 import UIKit
 
-@IBDesignable
-open class TagView: UIButton {
+open class TagView: LinkedLabel {
 
-    @IBInspectable open var cornerRadius: CGFloat = 0 {
+    open var cornerRadius: CGFloat = 0 {
         didSet {
             layer.cornerRadius = cornerRadius
             layer.masksToBounds = cornerRadius > 0
         }
     }
-    @IBInspectable open var borderWidth: CGFloat = 0 {
+
+    open var borderWidth: CGFloat = 0 {
         didSet {
             layer.borderWidth = borderWidth
         }
     }
     
-    @IBInspectable open var borderColor: UIColor? {
+    open var borderColor: UIColor? {
         didSet {
             reloadStyles()
         }
     }
     
-    @IBInspectable open var textColor: UIColor = UIColor.white {
+    open var tagTextColor: UIColor = UIColor.white {
         didSet {
             reloadStyles()
-        }
-    }
-    @IBInspectable open var selectedTextColor: UIColor = UIColor.white {
-        didSet {
-            reloadStyles()
-        }
-    }
-    @IBInspectable open var titleLineBreakMode: NSLineBreakMode = .byTruncatingMiddle {
-        didSet {
-            titleLabel?.lineBreakMode = titleLineBreakMode
-        }
-    }
-    @IBInspectable open var paddingY: CGFloat = 2 {
-        didSet {
-            titleEdgeInsets.top = paddingY
-            titleEdgeInsets.bottom = paddingY
-        }
-    }
-    @IBInspectable open var paddingX: CGFloat = 5 {
-        didSet {
-            titleEdgeInsets.left = paddingX
-            updateRightInsets()
         }
     }
 
-    @IBInspectable open var tagBackgroundColor: UIColor = UIColor.gray {
+    open var titleLineBreakMode: NSLineBreakMode = .byTruncatingMiddle {
+        didSet {
+            lineBreakMode = titleLineBreakMode
+        }
+    }
+
+    open var paddingY: CGFloat = 2 {
+        didSet {
+            setNeedsLayout()
+            layoutIfNeeded()
+        }
+    }
+
+    open var paddingX: CGFloat = 5 {
+        didSet {
+            setNeedsLayout()
+            layoutIfNeeded()
+        }
+    }
+
+    open var tagBackgroundColor: UIColor = UIColor.gray {
         didSet {
             reloadStyles()
         }
     }
     
-    @IBInspectable open var highlightedBackgroundColor: UIColor? {
+    open var textFont: UIFont = .systemFont(ofSize: 12) {
         didSet {
-            reloadStyles()
-        }
-    }
-    
-    @IBInspectable open var selectedBorderColor: UIColor? {
-        didSet {
-            reloadStyles()
-        }
-    }
-    
-    @IBInspectable open var selectedBackgroundColor: UIColor? {
-        didSet {
-            reloadStyles()
-        }
-    }
-    
-    @IBInspectable open var textFont: UIFont = .systemFont(ofSize: 12) {
-        didSet {
-            titleLabel?.font = textFont
+            font = textFont
         }
     }
     
     private func reloadStyles() {
-        if isHighlighted {
-            if let highlightedBackgroundColor = highlightedBackgroundColor {
-                // For highlighted, if it's nil, we should not fallback to backgroundColor.
-                // Instead, we keep the current color.
-                backgroundColor = highlightedBackgroundColor
-            }
-        }
-        else if isSelected {
-            backgroundColor = selectedBackgroundColor ?? tagBackgroundColor
-            layer.borderColor = selectedBorderColor?.cgColor ?? borderColor?.cgColor
-            setTitleColor(selectedTextColor, for: UIControl.State())
-        }
-        else {
-            backgroundColor = tagBackgroundColor
-            layer.borderColor = borderColor?.cgColor
-            setTitleColor(textColor, for: UIControl.State())
-        }
+        backgroundColor = tagBackgroundColor
+        layer.borderColor = borderColor?.cgColor
+        textColor = tagTextColor
     }
-    
-    override open var isHighlighted: Bool {
-        didSet {
-            reloadStyles()
-        }
-    }
-    
-    override open var isSelected: Bool {
-        didSet {
-            reloadStyles()
-        }
-    }
-    
-    // MARK: remove button
-    
-    let removeButton = CloseButton()
-    
-    @IBInspectable open var enableRemoveButton: Bool = false {
-        didSet {
-            removeButton.isHidden = !enableRemoveButton
-            updateRightInsets()
-        }
-    }
-    
-    @IBInspectable open var removeButtonIconSize: CGFloat = 12 {
-        didSet {
-            removeButton.iconSize = removeButtonIconSize
-            updateRightInsets()
-        }
-    }
-    
-    @IBInspectable open var removeIconLineWidth: CGFloat = 3 {
-        didSet {
-            removeButton.lineWidth = removeIconLineWidth
-        }
-    }
-    @IBInspectable open var removeIconLineColor: UIColor = UIColor.white.withAlphaComponent(0.54) {
-        didSet {
-            removeButton.lineColor = removeIconLineColor
-        }
-    }
-    
-    /// Handles Tap (TouchUpInside)
-    open var onTap: ((TagView) -> Void)?
-    open var onLongPress: ((TagView) -> Void)?
-    
+
     // MARK: - init
     
     required public init?(coder aDecoder: NSCoder) {
@@ -162,58 +83,33 @@ open class TagView: UIButton {
     
     public init(title: String) {
         super.init(frame: CGRect.zero)
-        setTitle(title, for: UIControl.State())
-        
+
+        if (title.isHTML) {
+            attributedText = title.htmlToAttributedString
+        } else {
+            text = title
+        }
         setupView()
     }
     
     private func setupView() {
-        titleLabel?.lineBreakMode = titleLineBreakMode
-
+        lineBreakMode = titleLineBreakMode
+        textAlignment = .center
+        numberOfLines = 0
         frame.size = intrinsicContentSize
-        addSubview(removeButton)
-        removeButton.tagView = self
-        
-        let longPress = UILongPressGestureRecognizer(target: self, action: #selector(self.longPress))
-        self.addGestureRecognizer(longPress)
-    }
-    
-    @objc func longPress() {
-        onLongPress?(self)
+        isUserInteractionEnabled = true
     }
     
     // MARK: - layout
 
     override open var intrinsicContentSize: CGSize {
-        var size = titleLabel?.text?.size(withAttributes: [NSAttributedString.Key.font: textFont]) ?? CGSize.zero
+        var size = text?.size(withAttributes: [NSAttributedString.Key.font: textFont]) ?? CGSize.zero
         size.height = textFont.pointSize + paddingY * 2
         size.width += paddingX * 2
         if size.width < size.height {
             size.width = size.height
         }
-        if enableRemoveButton {
-            size.width += removeButtonIconSize + paddingX
-        }
         return size
-    }
-    
-    private func updateRightInsets() {
-        if enableRemoveButton {
-            titleEdgeInsets.right = paddingX  + removeButtonIconSize + paddingX
-        }
-        else {
-            titleEdgeInsets.right = paddingX
-        }
-    }
-    
-    open override func layoutSubviews() {
-        super.layoutSubviews()
-        if enableRemoveButton {
-            removeButton.frame.size.width = paddingX + removeButtonIconSize + paddingX
-            removeButton.frame.origin.x = self.frame.width - removeButton.frame.width
-            removeButton.frame.size.height = self.frame.height
-            removeButton.frame.origin.y = 0
-        }
     }
 }
 
@@ -226,3 +122,89 @@ private extension UIControl {
     typealias State = UIControlState
 }
 #endif
+
+
+extension String {
+    var htmlToAttributedString: NSAttributedString? {
+        guard let data = data(using: .utf8) else { return nil }
+        do {
+            return try NSAttributedString(data: data, options: [.documentType: NSAttributedString.DocumentType.html, .characterEncoding:String.Encoding.utf8.rawValue], documentAttributes: nil)
+        } catch {
+            return nil
+        }
+    }
+    var htmlToString: String {
+        return htmlToAttributedString?.string ?? ""
+    }
+
+    var isHTML: Bool {
+        if isEmpty {
+            return false
+        }
+        return (range(of: "<(\"[^\"]*\"|'[^']*'|[^'\">])*>", options: .regularExpression) != nil)
+    }
+}
+
+
+open class LinkedLabel: UILabel {
+
+    fileprivate let layoutManager = NSLayoutManager()
+    fileprivate let textContainer = NSTextContainer(size: CGSize.zero)
+    fileprivate var textStorage: NSTextStorage?
+
+
+    override init(frame aRect:CGRect){
+        super.init(frame: aRect)
+        self.initialize()
+    }
+
+    required public init?(coder aDecoder: NSCoder) {
+        super.init(coder: aDecoder)
+        self.initialize()
+    }
+
+    func initialize(){
+
+        let tap = UITapGestureRecognizer(target: self, action: #selector(LinkedLabel.handleTapOnLabel))
+        self.isUserInteractionEnabled = true
+        self.addGestureRecognizer(tap)
+    }
+
+    open override var attributedText: NSAttributedString?{
+        didSet{
+            if let _attributedText = attributedText{
+                self.textStorage = NSTextStorage(attributedString: _attributedText)
+
+                self.layoutManager.addTextContainer(self.textContainer)
+                self.textStorage?.addLayoutManager(self.layoutManager)
+
+                self.textContainer.lineFragmentPadding = 0.0;
+                self.textContainer.lineBreakMode = self.lineBreakMode;
+                self.textContainer.maximumNumberOfLines = self.numberOfLines;
+            }
+
+        }
+    }
+
+    @objc func handleTapOnLabel(tapGesture:UITapGestureRecognizer){
+
+        let locationOfTouchInLabel = tapGesture.location(in: tapGesture.view)
+        let labelSize = tapGesture.view?.bounds.size
+        let textBoundingBox = self.layoutManager.usedRect(for: self.textContainer)
+        let textContainerOffset = CGPoint(x: ((labelSize?.width)! - textBoundingBox.size.width) * 0.5 - textBoundingBox.origin.x, y: ((labelSize?.height)! - textBoundingBox.size.height) * 0.5 - textBoundingBox.origin.y)
+
+        let locationOfTouchInTextContainer = CGPoint(x: locationOfTouchInLabel.x - textContainerOffset.x, y: locationOfTouchInLabel.y - textContainerOffset.y)
+        let indexOfCharacter = self.layoutManager.characterIndex(for: locationOfTouchInTextContainer, in: self.textContainer, fractionOfDistanceBetweenInsertionPoints: nil)
+
+
+        let rangeX = NSMakeRange(0, self.attributedText?.length ?? 0)
+        let options = NSAttributedString.EnumerationOptions(rawValue: UInt(0))
+        self.attributedText?.enumerateAttribute(.link, in: rangeX, options: options, using: { attributes, range, stop in
+            if NSLocationInRange(indexOfCharacter, range){
+                if let attr = attributes as? URL {
+                    UIApplication.shared.open(attr, options: [:], completionHandler: nil)
+                }
+            }
+        })
+    }
+}

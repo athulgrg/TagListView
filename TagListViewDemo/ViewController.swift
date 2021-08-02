@@ -7,8 +7,31 @@
 //
 
 import UIKit
+import Foundation
 
-class ViewController: UIViewController, TagListViewDelegate {
+let html = """
+            <!DOCTYPE html PUBLIC \"-//W3C//DTD HTML 4.01//EN\"
+ \"http://www.w3.org/TR/html4/strict.dtd\">\n<html>\n<head>
+\n<meta http-equiv=\"Content-Type\" content=\"text/html;
+charset=UTF-8\">\n<meta http-equiv=\"Content-Style-Type\"
+ content=\"text/css\">\n<title></title>\n<meta name=\"Generator\"
+content=\"Cocoa HTML Writer\">\n<style type=\"text/css\">\np.p1
+{margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px \'Times New Roman\';
+ color: #000000; -webkit-text-stroke: #000000}\nspan.s1
+{font-family: \'TimesNewRomanPS-BoldMT\'; font-weight: bold;
+ font-style: normal; font-size: 12.00px; font-kerning: none}\nspan.s2
+{font-family: \'.SFUI-Regular\'; font-weight: normal; font-style: normal;
+ font-size: 14.00px; -webkit-text-stroke: 0px #000000}\nspan.s3
+{font-family: \'.SFUI-Regular\'; font-weight: normal; font-style:
+normal; font-size: 14.00px; color: #000000; -webkit-text-stroke:
+ 0px #000000}\n</style>\n</head>\n<body>\n<p class=\"p1\">
+<span class=\"s1\">This text is bold</span><span class=\"s2\">
+<a href=\"https://www.youtube.com/watch?v=o8KGtruDxPQ\">
+<span class=\"s3\">YouTube</span></a>
+<span class=\"Apple-converted-space\">&nbsp;</span></span></p>\n</body>\n</html>\n
+"""
+
+class ViewController: UIViewController {
 
     @IBOutlet weak var tagListView: TagListView!
     @IBOutlet weak var biggerTagListView: TagListView!
@@ -16,60 +39,34 @@ class ViewController: UIViewController, TagListViewDelegate {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
-        tagListView.delegate = self
-        tagListView.addTag("TagListView")
-        tagListView.addTag("TEAChart")
-        tagListView.addTag("To Be Removed")
-        tagListView.addTag("To Be Removed")
-        tagListView.addTag("Quark Shell")
-        tagListView.removeTag("To Be Removed")
-        tagListView.addTag("On tap will be removed").onTap = { [weak self] tagView in
-            self?.tagListView.removeTagView(tagView)
-        }
-        
-        let tagView = tagListView.addTag("gray")
-        tagView.tagBackgroundColor = UIColor.gray
-        tagView.onTap = { tagView in
-            print("Don’t tap me!")
-        }
 
-        tagListView.insertTag("This should be the third tag", at: 2)
-        
-        biggerTagListView.delegate = self
-        biggerTagListView.textFont = .systemFont(ofSize: 15)
-        biggerTagListView.shadowRadius = 2
-        biggerTagListView.shadowOpacity = 0.4
-        biggerTagListView.shadowColor = UIColor.black
-        biggerTagListView.shadowOffset = CGSize(width: 1, height: 1)
-        biggerTagListView.addTag("Inboard")
-        biggerTagListView.addTag("Pomotodo")
-        biggerTagListView.addTag("Halo Word")
-        biggerTagListView.alignment = .center
-        
-        biggestTagListView.delegate = self
-        biggestTagListView.textFont = .systemFont(ofSize: 24)
-        // it is also possible to add all tags in one go
-        biggestTagListView.addTags(["all", "your", "tag", "are", "belong", "to", "us"])
-        biggestTagListView.minWidth = 57
-        biggestTagListView.alignment = .right
-        
-    }
-    
-    override func didReceiveMemoryWarning() {
-        super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated.
-    }
+        let title1 = NSMutableAttributedString(string: "Athul George | ",
+                                             attributes: [NSAttributedString.Key.font:
+                                                            UIFont.systemFont(ofSize: 12, weight: .regular)])
+        let description1 = NSAttributedString(string: "How are you?",
+                                      attributes:[NSAttributedString.Key.font:
+                                                    UIFont.systemFont(ofSize: 12, weight: .bold)])
+        title1.append(description1)
 
-    // MARK: TagListViewDelegate
-    func tagPressed(_ title: String, tagView: TagView, sender: TagListView) {
-        print("Tag pressed: \(title), \(sender)")
-        tagView.isSelected = !tagView.isSelected
-    }
-    
-    func tagRemoveButtonPressed(_ title: String, tagView: TagView, sender: TagListView) {
-        print("Tag Remove pressed: \(title), \(sender)")
-        sender.removeTagView(tagView)
+        let attributedTag1 = TagView(title: "")
+        attributedTag1.attributedText = title1
+        attributedTag1.paddingX = 12
+        attributedTag1.paddingY = 8
+
+        let title2 = NSMutableAttributedString(string: "Athul George | ",
+                                             attributes: [NSAttributedString.Key.font:
+                                                            UIFont.systemFont(ofSize: 12, weight: .regular)])
+        guard let description2 = try? NSAttributedString(data: Data(html.utf8),
+                                               options: [.documentType: NSAttributedString.DocumentType.html],
+                                               documentAttributes: nil) else { return }
+        title2.append(description2)
+
+        let attributedTag2 = TagView(title: "")
+        attributedTag2.attributedText = title2
+        attributedTag2.paddingX = 12
+        attributedTag2.paddingY = 8
+
+        biggestTagListView.addTagViews([attributedTag1, attributedTag2])
+        biggestTagListView.tagBackgroundColor = UIColor.red
     }
 }
-
