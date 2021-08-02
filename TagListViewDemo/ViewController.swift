@@ -42,10 +42,14 @@ class ViewController: UIViewController {
 
         let title1 = NSMutableAttributedString(string: "Athul George | ",
                                              attributes: [NSAttributedString.Key.font:
-                                                            UIFont.systemFont(ofSize: 12, weight: .regular)])
+                                                            UIFont.systemFont(ofSize: 12, weight: .regular),
+                                                          NSAttributedString.Key.foregroundColor:
+                                                            UIColor.lightGray])
         let description1 = NSAttributedString(string: "How are you?",
                                       attributes:[NSAttributedString.Key.font:
-                                                    UIFont.systemFont(ofSize: 12, weight: .bold)])
+                                                    UIFont.systemFont(ofSize: 12, weight: .bold),
+                                                  NSAttributedString.Key.foregroundColor:
+                                                    UIColor.darkGray])
         title1.append(description1)
 
         let attributedTag1 = TagView(title: "")
@@ -55,7 +59,9 @@ class ViewController: UIViewController {
 
         let title2 = NSMutableAttributedString(string: "Athul George | ",
                                              attributes: [NSAttributedString.Key.font:
-                                                            UIFont.systemFont(ofSize: 12, weight: .regular)])
+                                                            UIFont.systemFont(ofSize: 12, weight: .regular),
+                                                          NSAttributedString.Key.foregroundColor:
+                                                            UIColor.lightGray as Any])
         guard let description2 = try? NSAttributedString(data: Data(html.utf8),
                                                options: [.documentType: NSAttributedString.DocumentType.html],
                                                documentAttributes: nil) else { return }
@@ -67,6 +73,5 @@ class ViewController: UIViewController {
         attributedTag2.paddingY = 8
 
         biggestTagListView.addTagViews([attributedTag1, attributedTag2])
-        biggestTagListView.tagBackgroundColor = UIColor.red
     }
 }

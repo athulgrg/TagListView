@@ -25,13 +25,13 @@ open class TagView: LinkedLabel {
     
     open var borderColor: UIColor? {
         didSet {
-            reloadStyles()
+            layer.borderColor = borderColor?.cgColor
         }
     }
     
     open var tagTextColor: UIColor = UIColor.white {
         didSet {
-            reloadStyles()
+            textColor = tagTextColor
         }
     }
 
@@ -57,7 +57,7 @@ open class TagView: LinkedLabel {
 
     open var tagBackgroundColor: UIColor = UIColor.gray {
         didSet {
-            reloadStyles()
+            backgroundColor = tagBackgroundColor
         }
     }
     
@@ -65,12 +65,6 @@ open class TagView: LinkedLabel {
         didSet {
             font = textFont
         }
-    }
-    
-    private func reloadStyles() {
-        backgroundColor = tagBackgroundColor
-        layer.borderColor = borderColor?.cgColor
-        textColor = tagTextColor
     }
 
     // MARK: - init
