@@ -40,20 +40,20 @@ class ViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        let title1 = NSMutableAttributedString(string: "Athul George | ",
+        let title1 = NSMutableAttributedString(string: "体の特徴（困りごと） | ",
                                              attributes: [NSAttributedString.Key.font:
                                                             UIFont.systemFont(ofSize: 12, weight: .regular),
                                                           NSAttributedString.Key.foregroundColor:
                                                             UIColor.lightGray])
-        let description1 = NSAttributedString(string: "How are you?",
+        let description1 = NSAttributedString(string: "高身長さん, 低身長さん, 肩幅広いさん, 大胸さん, 肩幅広め, 二の腕太め, おしり大きめ, ふともも太め, ふくらはぎ太め, 下腹ぽっこり, 足が甲高, 足が幅広",
                                       attributes:[NSAttributedString.Key.font:
                                                     UIFont.systemFont(ofSize: 12, weight: .bold),
                                                   NSAttributedString.Key.foregroundColor:
                                                     UIColor.darkGray])
         title1.append(description1)
 
-        let attributedTag1 = TagView(title: "")
-        attributedTag1.attributedText = title1
+        let attributedTag1 = TagView(title: title1)
+        attributedTag1.titleLineBreakMode = .byTruncatingTail
         attributedTag1.paddingX = 12
         attributedTag1.paddingY = 8
 
@@ -67,11 +67,14 @@ class ViewController: UIViewController {
                                                documentAttributes: nil) else { return }
         title2.append(description2)
 
-        let attributedTag2 = TagView(title: "")
-        attributedTag2.attributedText = title2
+        let attributedTag2 = TagView(title: title2)
         attributedTag2.paddingX = 12
         attributedTag2.paddingY = 8
 
-        biggestTagListView.addTagViews([attributedTag1, attributedTag2])
+        biggestTagListView.addTagViews([attributedTag1])
+        biggestTagListView.backgroundColor = UIColor.red
     }
 }
+
+
+// 体の特徴（困りごと） | 高身長さん, 低身長さん, 肩幅広いさん, 大胸さん, 肩幅広め, 二の腕太め, おしり大きめ, ふともも太め, ふくらはぎ太め, 下腹ぽっこり, 足が甲高, 足が幅広
